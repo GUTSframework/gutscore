@@ -1,12 +1,12 @@
 """Tests for the gutscore.task module."""
 
 import pytest
-from gutscore.task import Task
+from scheduler.task import Task
 
 def test_define_blank_task():
     """Define an empty task."""
     task = Task("blank", {})
-    assert task.to_json() == {"name": "blank"}
+    assert task.to_json() == '{"function_name": "blank", "args": {}}'
 
 def test_execute_blank_task():
     """Try executing an undefined function task."""
