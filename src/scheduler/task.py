@@ -1,20 +1,24 @@
 """A plain class to represent GUTS tasks."""
 from __future__ import annotations
 import json
+import logging
 import time
-from typing import Any, Optional
+from typing import Any
+from typing import Callable
+
+_logger = logging.getLogger(__name__)
 
 # A register of task functions
 task_functions_reg = {}
 
-def register_taskf(function_name : str):
+def register_taskf(function_name : str) -> Callable[Any]:
     """Add a task function in the register.
 
     Args:
     function_name: str
         The name of the function
     """
-    def decorator(function):
+    def decorator(function : Callable[Any]) -> Callable[Any]:
         task_functions_reg[function_name] = function
         return function
     return decorator
@@ -26,10 +30,10 @@ def unregister_taskf(function_name : str) -> None:
     function_name: str
         The name of the function to remove
     """
-    if function_name in task_functions:
+    if function_name in task_functions_reg:
         del task_functions_reg[function_name]
 
-@register_taskf('nap_test')
+@register_taskf("nap_test")
 def nap_test(nap_duration : float = 1.0) -> None:
     """A test function used in testing the scheduler."""
     time.sleep(nap_duration)
@@ -47,14 +51,14 @@ class Task:
     A disk-based function register might be better suited in this framework.
 
     Attributes:
-    _function_name: str    
+    _function_name: str
         The name of the function to call
     _args: dict[Any]
         The optional arguments dictionary to pass to the function
     """
     def __init__(self,
                  function_name : str,
-                 args : Optional[dict[Any]] = {}) -> None:
+                 args : dict[Any] | None = None) -> None:
         """Initialize the task.
 
         Args:
@@ -64,7 +68,7 @@ class Task:
             The optional arguments dictionary to pass to the function
         """
         self._function_name = function_name  # String name of the function to call
-        self._args = args
+        self._args = args if args is not None else {}
 
     def to_json(self) -> str:
         """Serialize the task to a JSON string for storage.
@@ -74,16 +78,24 @@ class Task:
             The JSON string of the task
         """
         return json.dumps({
-            'function_name': self._function_name,
-            'args': self._args
+            "function_name": self._function_name,
+            "args": self._args,
         })
 
     @staticmethod
-    def from_json(task_json) -> task:
+    def from_json(task_json : str) -> Task:
         """Deserialize a task from a JSON string.
+
+        Args:
+        task_json: str
+            The JSON string of the task
+
+        Returns:
+        Task
+            The deserialized task
         """
         task_dict = json.loads(task_json)
-        return Task(task_dict['function_name'], task_dict['args'])
+        return Task(task_dict["function_name"], task_dict["args"])
 
     def execute(self) -> None:
         """Execute the task by calling the corresponding function.
@@ -96,10 +108,12 @@ class Task:
         """
         func = task_functions_reg.get(self._function_name)
         if func is None:
-            raise ValueError(f"Function '{self.function_name}' is not registered.")
-        
+            err_msg = f"Function '{self._function_name}' is not registered."
+            raise ValueError(err_msg)
+
         try:
             func(**self._args)
-        except Exception as e:
-            print(e)
-            raise RuntimeError(f"Error while executing task function: {self._function_name}")
+        except Exception:
+            err_msg = f"Function '{self._function_name}' execution failed."
+            _logger.exception(err_msg)
+            raise

@@ -3,6 +3,7 @@
 import pytest
 from scheduler.task import Task
 
+
 def test_define_blank_task():
     """Define an empty task."""
     task = Task("blank", {})
@@ -11,7 +12,7 @@ def test_define_blank_task():
 def test_execute_blank_task():
     """Try executing an undefined function task."""
     task = Task("blank", {})
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         task.execute()
 
 def test_execute_napping_task():
