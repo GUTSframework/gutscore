@@ -11,6 +11,6 @@ version: "0.0.1"
 repository-code: "https://github.com/GUTSframework/gutscore"
 keywords:
   - "Path Sampling"
-  - " Rare Events"
-  - " Molecular Dynamics"
+  - "Rare Events"
+  - "Molecular Dynamics"
 message: "If you use this software, please cite it using these metadata."
