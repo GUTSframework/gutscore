@@ -38,9 +38,15 @@ def nap_test(nap_duration : float = 1.0) -> None:
     """A test function used in testing the scheduler."""
     time.sleep(nap_duration)
 
+@register_taskf("fail_test")
+def fail_test() -> None:
+    """A failing test function used in testing the scheduler."""
+    err_msg = "Function fail."
+    raise RuntimeError(err_msg)
+
 # Task class to represent a callable function with arguments
 class Task:
-    """A class reprenting GUTS scheduler tasks.
+    """A class representing GUTS scheduler tasks.
 
     Tasks are units of work that workers can execute. They can
     be serialized, stored in the scheduler database and retrieved
