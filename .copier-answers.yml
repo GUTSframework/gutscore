@@ -1,0 +1,20 @@
+# Changes here will be overwritten by Copier
+SelectCodeQualityFeatures: []
+SelectCommunityFeatures: []
+SelectDocumentationFeatures:
+- AddLocalDocumentation_flag
+SelectPublishReleaseFeatures:
+- AddZenodo_flag
+_commit: 0.6.1
+_src_path: https://github.com/nlesc/python-template.git
+copyright_holder: GUTS consortium
+email: l.esclapez@esciencecenter.nl
+full_name: Lucas Esclapez
+github_organization: GUTSframework
+keywords: Path Sampling, Rare Events, Molecular Dynamics
+license: Apachev2
+package_name: gutscore
+package_short_description: The gutscore package contains the core classes and functionalities
+    upon which path sampling algorithms can be build.
+template_profile: recommended
+version: 0.0.1

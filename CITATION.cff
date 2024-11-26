@@ -1,0 +1,16 @@
+# YAML 1.2
+---
+cff-version: "1.2.0"
+title: "gutscore"
+authors:
+  - family-names: Esclapez
+    given-names: Lucas
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+date-released: 2024-11-26
+version: "0.0.1"
+repository-code: "https://github.com/GUTSframework/gutscore"
+keywords:
+  - "Path Sampling"
+  - " Rare Events"
+  - " Molecular Dynamics"
+message: "If you use this software, please cite it using these metadata."
