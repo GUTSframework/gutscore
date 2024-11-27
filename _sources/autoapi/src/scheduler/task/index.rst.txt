@@ -1,0 +1,137 @@
+src.scheduler.task
+==================
+
+.. py:module:: src.scheduler.task
+
+.. autoapi-nested-parse::
+
+   A plain class to represent GUTS tasks.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.scheduler.task._logger
+   src.scheduler.task.task_functions_reg
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.scheduler.task.Task
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   src.scheduler.task.register_taskf
+   src.scheduler.task.unregister_taskf
+   src.scheduler.task.nap_test
+   src.scheduler.task.fail_test
+
+
+Module Contents
+---------------
+
+.. py:data:: _logger
+
+.. py:data:: task_functions_reg
+
+.. py:function:: register_taskf(function_name: str) -> Callable[Ellipsis, Any]
+
+   Add a task function in the register.
+
+   Args:
+   function_name: str
+       The name of the function
+
+
+.. py:function:: unregister_taskf(function_name: str) -> None
+
+   Remove a task function from the register.
+
+   Args:
+   function_name: str
+       The name of the function to remove
+
+
+.. py:function:: nap_test(nap_duration: float = 1.0) -> None
+
+   A test function used in testing the scheduler.
+
+
+.. py:function:: fail_test() -> None
+
+   A failing test function used in testing the scheduler.
+
+
+.. py:class:: Task(function_name: str, args: dict[Any, Any] | None = None)
+
+   A class representing GUTS scheduler tasks.
+
+   Tasks are units of work that workers can execute. They can
+   be serialized, stored in the scheduler database and retrieved
+   later for execution.
+
+   The current implementation relies on an in-memory function register to map
+   function names stored in the tasks to Python concrete functions.
+   A disk-based function register might be better suited in this framework.
+
+   Attributes:
+   _function_name: str
+       The name of the function to call
+   _args: dict[Any]
+       The optional arguments dictionary to pass to the function
+
+
+   .. py:attribute:: _function_name
+
+
+   .. py:attribute:: _args
+
+
+   .. py:method:: to_json() -> str
+
+      Serialize the task to a JSON string for storage.
+
+      Returns:
+      str
+          The JSON string of the task
+
+
+
+   .. py:method:: from_json(task_json: str) -> Task
+      :staticmethod:
+
+
+      Deserialize a task from a JSON string.
+
+      Args:
+      task_json: str
+          The JSON string of the task
+
+      Returns:
+      Task
+          The deserialized task
+
+
+
+   .. py:method:: execute() -> None
+
+      Execute the task by calling the corresponding function.
+
+      Raises:
+      ValueError
+          If the function is not registered
+      RuntimeError
+          If the function execution fails
+
+
+

@@ -1,0 +1,45 @@
+src
+===
+
+.. py:module:: src
+
+.. autoapi-nested-parse::
+
+   Documentation about gutscore.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/scheduler/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   src.__author__
+   src.__email__
+   src.__version__
+
+
+Package Contents
+----------------
+
+.. py:data:: __author__
+   :value: 'Lucas Esclapez'
+
+
+.. py:data:: __email__
+   :value: 'l.esclapez@esciencecenter.nl'
+
+
+.. py:data:: __version__
+   :value: '0.0.1'
+
+

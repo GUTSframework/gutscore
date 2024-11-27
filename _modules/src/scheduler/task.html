@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.scheduler.task &mdash; gutscore 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/theme.css" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gutscore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gutscore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../src.html">src</a></li>
+      <li class="breadcrumb-item active">src.scheduler.task</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.scheduler.task</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;A plain class to represent GUTS tasks.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<div class="viewcode-block" id="_logger">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task._logger">[docs]</a>
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span></div>
+
+
+<span class="c1"># A register of task functions</span>
+<div class="viewcode-block" id="task_functions_reg">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.task_functions_reg">[docs]</a>
+<span class="n">task_functions_reg</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="register_taskf">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.register_taskf">[docs]</a>
+<span class="k">def</span> <span class="nf">register_taskf</span><span class="p">(</span><span class="n">function_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span> <span class="p">,</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add a task function in the register.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    function_name: str</span>
+<span class="sd">        The name of the function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">function</span> <span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span> <span class="p">,</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span> <span class="p">,</span><span class="n">Any</span><span class="p">]:</span>
+        <span class="n">task_functions_reg</span><span class="p">[</span><span class="n">function_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span>
+        <span class="k">return</span> <span class="n">function</span>
+    <span class="k">return</span> <span class="n">decorator</span></div>
+
+
+<div class="viewcode-block" id="unregister_taskf">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.unregister_taskf">[docs]</a>
+<span class="k">def</span> <span class="nf">unregister_taskf</span><span class="p">(</span><span class="n">function_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a task function from the register.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    function_name: str</span>
+<span class="sd">        The name of the function to remove</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">function_name</span> <span class="ow">in</span> <span class="n">task_functions_reg</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">task_functions_reg</span><span class="p">[</span><span class="n">function_name</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warn_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Attempted to unregister non-existent function &#39;</span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">warn_msg</span><span class="p">)</span></div>
+
+
+<span class="nd">@register_taskf</span><span class="p">(</span><span class="s2">&quot;nap_test&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="nap_test">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.nap_test">[docs]</a>
+<span class="k">def</span> <span class="nf">nap_test</span><span class="p">(</span><span class="n">nap_duration</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A test function used in testing the scheduler.&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">nap_duration</span><span class="p">)</span></div>
+
+
+<span class="nd">@register_taskf</span><span class="p">(</span><span class="s2">&quot;fail_test&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="fail_test">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.fail_test">[docs]</a>
+<span class="k">def</span> <span class="nf">fail_test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A failing test function used in testing the scheduler.&quot;&quot;&quot;</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;Function fail.&quot;</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span></div>
+
+
+<span class="c1"># Task class to represent a callable function with arguments</span>
+<div class="viewcode-block" id="Task">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task">[docs]</a>
+<span class="k">class</span> <span class="nc">Task</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class representing GUTS scheduler tasks.</span>
+
+<span class="sd">    Tasks are units of work that workers can execute. They can</span>
+<span class="sd">    be serialized, stored in the scheduler database and retrieved</span>
+<span class="sd">    later for execution.</span>
+
+<span class="sd">    The current implementation relies on an in-memory function register to map</span>
+<span class="sd">    function names stored in the tasks to Python concrete functions.</span>
+<span class="sd">    A disk-based function register might be better suited in this framework.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">    _function_name: str</span>
+<span class="sd">        The name of the function to call</span>
+<span class="sd">    _args: dict[Any]</span>
+<span class="sd">        The optional arguments dictionary to pass to the function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">function_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">args</span> <span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the task.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        function_name: str</span>
+<span class="sd">            The name of the function to call</span>
+<span class="sd">        args: dict[Any]</span>
+<span class="sd">            The optional arguments dictionary to pass to the function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Task._function_name">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task._function_name">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_function_name</span> <span class="o">=</span> <span class="n">function_name</span>  <span class="c1"># String name of the function to call</span></div>
+
+<div class="viewcode-block" id="Task._args">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task._args">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="n">args</span> <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span></div>
+
+
+<div class="viewcode-block" id="Task.to_json">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task.to_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize the task to a JSON string for storage.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        str</span>
+<span class="sd">            The JSON string of the task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">&quot;function_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function_name</span><span class="p">,</span>
+            <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Task.from_json">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task.from_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="n">task_json</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Task</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserialize a task from a JSON string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        task_json: str</span>
+<span class="sd">            The JSON string of the task</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        Task</span>
+<span class="sd">            The deserialized task</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">task_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">task_json</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Task</span><span class="p">(</span><span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;function_name&quot;</span><span class="p">],</span> <span class="n">task_dict</span><span class="p">[</span><span class="s2">&quot;args&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Task.execute">
+<a class="viewcode-back" href="../../../autoapi/src/scheduler/task/index.html#src.scheduler.task.Task.execute">[docs]</a>
+    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the task by calling the corresponding function.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the function is not registered</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the function execution fails</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">task_functions_reg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Function &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_function_name</span><span class="si">}</span><span class="s2">&#39; is not registered.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Function &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_function_name</span><span class="si">}</span><span class="s2">&#39; execution failed.&quot;</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024-11-26 11:21:31, GUTS consortium.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+src.scheduler
+=============
+
+.. py:module:: src.scheduler
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/src/scheduler/task/index
+
+
