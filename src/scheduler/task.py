@@ -11,14 +11,14 @@ _logger = logging.getLogger(__name__)
 # A register of task functions
 task_functions_reg = {}
 
-def register_taskf(function_name : str) -> Callable[Any]:
+def register_taskf(function_name : str) -> Callable[... ,Any]:
     """Add a task function in the register.
 
     Args:
     function_name: str
         The name of the function
     """
-    def decorator(function : Callable[Any]) -> Callable[Any]:
+    def decorator(function : Callable[... ,Any]) -> Callable[... ,Any]:
         task_functions_reg[function_name] = function
         return function
     return decorator
@@ -32,6 +32,9 @@ def unregister_taskf(function_name : str) -> None:
     """
     if function_name in task_functions_reg:
         del task_functions_reg[function_name]
+    else:
+        warn_msg = f"Attempted to unregister non-existent function '{function_name}'."
+        _logger.warning(warn_msg)
 
 @register_taskf("nap_test")
 def nap_test(nap_duration : float = 1.0) -> None:
@@ -64,7 +67,7 @@ class Task:
     """
     def __init__(self,
                  function_name : str,
-                 args : dict[Any] | None = None) -> None:
+                 args : dict[Any,Any] | None = None) -> None:
         """Initialize the task.
 
         Args:
