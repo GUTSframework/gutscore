@@ -1,5 +1,6 @@
 """Tests for the gutscore.task module."""
 
+import logging
 import pytest
 from scheduler.task import Task
 from scheduler.task import register_taskf
@@ -10,6 +11,13 @@ def test_define_blank_task():
     """Define an empty task."""
     task = Task("blank", {})
     assert task.to_json() == '{"function_name": "blank", "args": {}}'
+
+def test_deserialize_blank_task():
+    """Deserialize an empty task."""
+    task = Task("blank", {})
+    json_task = task.to_json()
+    task_deserialized = Task.from_json(json_task)
+    assert task_deserialized.to_json() == json_task
 
 def test_execute_blank_task():
     """Try executing an undefined function task."""
@@ -36,3 +44,9 @@ def test_add_remove_taskf_to_register():
     task = Task("local_test_function", {})
     task.execute()
     unregister_taskf("local_test_function")
+
+def test_unregister_unknown_taskf(caplog : pytest.LogCaptureFixture):
+    """Attempt to unregister a non-registered task function."""
+    caplog.set_level(logging.WARNING)
+    unregister_taskf("unlikely_known_function")
+    assert "Attempted to unregister" in caplog.text
