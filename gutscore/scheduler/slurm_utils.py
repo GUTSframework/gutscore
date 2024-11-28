@@ -4,6 +4,7 @@ import logging
 import os
 import shlex
 import subprocess
+from pathlib import Path
 from typing import Any
 
 _logger = logging.getLogger(__name__)
@@ -302,3 +303,93 @@ class SlurmCluster:
             updated_config["partition"] = self._default_partition
 
         return updated_config
+
+def make_job_script_wgroup(wgroup_id : int,
+                           res_config: dict[Any,Any]) -> list[str]:
+    """Assemble a workergroup job script from resource config.
+
+    Args:
+        wgroup_id : The workergroup index number
+        res_config : The resource configuration specification
+
+    Returns:
+        A full Slurm batch script as a list of strings, one per line
+    """
+    # Initialize with header
+    job_script = list(_slurm_header)
+    job_script.append(f"{_slurm_dir_prefix} --job-name=GUTS_WG{wgroup_id:05d}")
+
+    # Append mandatory directives
+    runtime = res_config.get("time")
+    partition = res_config.get("partition")
+    nnodes = res_config.get("nodes")
+    job_script.append(f"{_slurm_dir_prefix} --time={runtime}")
+    job_script.append(f"{_slurm_dir_prefix} --partition={partition}")
+    job_script.append(f"{_slurm_dir_prefix} --nodes={nnodes}")
+
+    # Account can be default associated to user in SLURM
+    account = res_config.get("account")
+    if account is not None:
+        job_script.append(f"{_slurm_dir_prefix} --account={account}")
+
+    # Add any user-defined extra directives
+    extra_dirs = res_config.get("extra_directives", {})
+    for key, value in extra_dirs.items():
+        if value:
+            job_script.append(f"{_slurm_dir_prefix} {key}={value}")
+        else:
+            job_script.append(f"{_slurm_dir_prefix} {key}")
+
+    # Add pre-command lines
+    pre_cmd_list = res_config.get("pre_cmd_list", [])
+    job_script.extend(pre_cmd_list)
+
+    toml_file = f"input_WG{wgroup_id:05d}.toml"
+    full_slurm_group_cmd = f"{_slurm_group_cmd} -i {toml_file} -wg {wgroup_id}"
+    job_script.append(full_slurm_group_cmd)
+
+    post_cmd_list = res_config.get("post_cmd_list", [])
+    job_script.extend(post_cmd_list)
+
+    return job_script
+
+def submit_slurm_job(wgroup_id : int,
+                     job_script : list[str]) -> int:
+    """Submit a job to the Slurm queue.
+
+    Args:
+        wgroup_id : The workergroup index
+        job_script : The job batch script as a list of strings
+
+    Returns:
+        The submitted SLURM_JOB_ID
+
+    Raises:
+        RuntimeError : If it fails to submit the batch script
+    """
+    sbatch = "sbatch"
+
+    # Dump script to temporary file
+    tmp_batch = f".WG{wgroup_id:05d}.batch"
+    with Path(tmp_batch).open("w") as f:
+        for line in job_script:
+            f.write(f"{line}\n")
+
+    sbatch_cmd = [sbatch]
+    sbatch_cmd.append(tmp_batch)
+    try:
+        result = subprocess.run(sbatch_cmd,
+                                capture_output=True,
+                                check=False)
+        if result.returncode != 0:
+            slurm_err = result.stderr.decode("utf-8")
+            err_msg = f"Unable to submit job to Slurm queue. Error {slurm_err}"
+            _logger.exception(err_msg)
+            raise RuntimeError(err_msg)
+        stdout = result.stdout.decode("utf-8")
+        return int(stdout.split(" ")[3])
+
+    except subprocess.CalledProcessError:
+        err_msg = f"Unable to submit job to Slurm queue for wgroup {wgroup_id}"
+        _logger.exception(err_msg)
+        raise

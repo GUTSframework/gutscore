@@ -2,6 +2,8 @@
 import pytest
 from scheduler.slurm_utils import SlurmCluster
 from scheduler.slurm_utils import is_slurm_avail
+from scheduler.slurm_utils import make_job_script_wgroup
+from scheduler.slurm_utils import submit_slurm_job
 from scheduler.slurm_utils import time_to_s
 
 
@@ -64,3 +66,24 @@ def test_success_check_res_config():
     res_config = {"nodes": 1, "time": "01:00:00"}
     up_config = slurm_cluster.process_res_config(res_config)
     assert res_config["nodes"] == up_config["nodes"]
+
+@pytest.mark.usefixtures("slurm_available")
+def test_build_script():
+    """Test assembling a slurm script from resource config."""
+    slurm_cluster = SlurmCluster()
+    res_config = {"nodes": 1, "time": "00:05:00"}
+    up_config = slurm_cluster.process_res_config(res_config)
+    job_script = make_job_script_wgroup(0, up_config)
+    assert job_script is not None
+
+@pytest.mark.usefixtures("slurm_available")
+def test_submit_job():
+    """Test submitting a Slurm job to the queue."""
+    slurm_cluster = SlurmCluster()
+    res_config = {"nodes": 1, "time": "00:01:00",
+                  "extra_directives": {"--exclusive" : None,
+                                       "--hold": None}}
+    up_config = slurm_cluster.process_res_config(res_config)
+    job_script = make_job_script_wgroup(0, up_config)
+    job_id = submit_slurm_job(0, job_script)
+    assert job_id is not None
