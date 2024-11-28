@@ -113,9 +113,10 @@ pydocstyle.convention = "google"
 [tool.ruff.lint.per-file-ignores]
 # Tests can ignore a few extra rules
 "tests/**.py" = [
-    "ANN201", # Missing return type annotation for public function
-    "PT011",  # Missing `match` parameter in `pytest.raises()`
-    "S101",   # Use of assert is detected
+    "ANN201",  # Missing return type annotation for public function
+    "PLR2004", # Magic value used in comparison
+    "PT011",   # Missing `match` parameter in `pytest.raises()`
+    "S101",    # Use of assert is detected
 ]
 
 [tool.ruff.lint.isort]
