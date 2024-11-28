@@ -101,6 +101,7 @@ ignore = [
     "FIX001", # Resolve FIXMEs
     "FIX002", # Resolve TODOs
     "B028",   # No explicit `stacklevel` keyword argument found in warning
+    "S603",   # Use subprocess without check
     # No docstrings required in the following cases
     "D100", # Missing module docstring
     "D104", # Missing public package docstring
