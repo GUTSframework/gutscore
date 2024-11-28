@@ -4,15 +4,18 @@
    contain the root `toctree` directive.
 
 Welcome to gutscore's documentation!
-==========================================================
+====================================
+
+`gutscore` is a Python package gathering the basic building blocks for a
+developing a path sampling algorithm.
 
 .. toctree::
-  :maxdepth: 2
-  :caption: Contents:
+  :titlesonly:
+  :maxdepth: 1
+  :caption: For Developers:
 
-Indices and tables
-==================
+  apidoc
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+License
+-------
+`gutscore` is distributed under an Apache 2.0 License.
