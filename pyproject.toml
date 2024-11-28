@@ -41,14 +41,14 @@ dev = [
     "ruff",
     "mypy",
     "sphinx",
-    "sphinx_rtd_theme",
+    "furo",
     "sphinx-autoapi",
     "tox",
     "myst_parser",
 ]
 docs = [
     "sphinx",
-    "sphinx_rtd_theme",
+    "furo",
     "sphinx-autoapi",
     "myst_parser",
 ]
