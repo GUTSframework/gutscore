@@ -68,7 +68,7 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 branch = true
-source = ["src"]
+source = ["gutscore"]
 command_line = "-m pytest"
 
 [tool.tox]
@@ -124,7 +124,7 @@ no-lines-before = ["future","standard-library","third-party","first-party","loca
 current_version = "0.0.1"
 
 [[tool.bumpversion.files]]
-filename = "src/__init__.py"
+filename = "gutscore/__init__.py"
 
 [[tool.bumpversion.files]]
 filename = "pyproject.toml"
@@ -143,4 +143,4 @@ warn_redundant_casts = true
 gutscore = ["py.typed"]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["gutscore"]
