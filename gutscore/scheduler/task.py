@@ -15,8 +15,10 @@ def register_taskf(function_name : str) -> Callable[... ,Any]:
     """Add a task function in the register.
 
     Args:
-    function_name: str
-        The name of the function
+        function_name: The name of the function
+
+    Returns:
+        The decorated function
     """
     def decorator(function : Callable[... ,Any]) -> Callable[... ,Any]:
         task_functions_reg[function_name] = function
@@ -27,8 +29,7 @@ def unregister_taskf(function_name : str) -> None:
     """Remove a task function from the register.
 
     Args:
-    function_name: str
-        The name of the function to remove
+        function_name: The name of the function to remove
     """
     if function_name in task_functions_reg:
         del task_functions_reg[function_name]
@@ -38,7 +39,11 @@ def unregister_taskf(function_name : str) -> None:
 
 @register_taskf("nap_test")
 def nap_test(nap_duration : float = 1.0) -> None:
-    """A test function used in testing the scheduler."""
+    """A test function used in testing the scheduler.
+
+    Args:
+        nap_duration: The number of seconds to sleep
+    """
     time.sleep(nap_duration)
 
 @register_taskf("fail_test")
@@ -60,10 +65,8 @@ class Task:
     A disk-based function register might be better suited in this framework.
 
     Attributes:
-    _function_name: str
-        The name of the function to call
-    _args: dict[Any]
-        The optional arguments dictionary to pass to the function
+        _function_name: The name of the function to call
+        _args: The optional arguments dictionary to pass to the function
     """
     def __init__(self,
                  function_name : str,
@@ -71,10 +74,8 @@ class Task:
         """Initialize the task.
 
         Args:
-        function_name: str
-            The name of the function to call
-        args: dict[Any]
-            The optional arguments dictionary to pass to the function
+            function_name: The name of the function to call
+            args: The optional arguments dictionary to pass to the function
         """
         self._function_name = function_name  # String name of the function to call
         self._args = args if args is not None else {}
@@ -83,7 +84,6 @@ class Task:
         """Serialize the task to a JSON string for storage.
 
         Returns:
-        str
             The JSON string of the task
         """
         return json.dumps({
@@ -96,11 +96,9 @@ class Task:
         """Deserialize a task from a JSON string.
 
         Args:
-        task_json: str
-            The JSON string of the task
+            task_json: The JSON string of the task
 
         Returns:
-        Task
             The deserialized task
         """
         task_dict = json.loads(task_json)
@@ -110,10 +108,8 @@ class Task:
         """Execute the task by calling the corresponding function.
 
         Raises:
-        ValueError
-            If the function is not registered
-        RuntimeError
-            If the function execution fails
+            ValueError: If the function is not registered
+            RuntimeError: If the function execution fails
         """
         func = task_functions_reg.get(self._function_name)
         if func is None:
