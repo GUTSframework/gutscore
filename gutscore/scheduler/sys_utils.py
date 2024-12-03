@@ -20,9 +20,13 @@ def is_linux_os() -> bool:
     system = sys.platform.lower()
     return system.startswith("lin")
 
-def get_cpu_count() -> int | None:
+def get_cpu_count() -> int:
     """Get the number of CPU on the system."""
-    return psutil.cpu_count(logical=False)
+    ncpu = psutil.cpu_count(logical=False)
+    if ncpu is None:
+        err_msg = "Unable to get the number of CPU on the system"
+        raise RuntimeError(err_msg)
+    return ncpu
 
 def get_username() -> str:
     """Get the hostname."""
