@@ -22,7 +22,7 @@ def is_linux_os() -> bool:
 
 def get_cpu_count() -> int:
     """Get the number of CPU on the system."""
-    ncpu = psutil.cpu_count(logical=False)
+    ncpu : int | None = psutil.cpu_count(logical=False)
     if ncpu is None:
         err_msg = "Unable to get the number of CPU on the system"
         raise RuntimeError(err_msg)

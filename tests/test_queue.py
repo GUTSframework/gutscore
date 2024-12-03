@@ -45,6 +45,7 @@ def test_add_task_with_unknown_deps():
     """Test adding a task with unknown dependencies to the queue."""
     queue = Queue()
     task = Task("dummy", {})
+    queue.add_task(task)
     random_uuid = uuid.uuid4()
     with pytest.raises(RuntimeError):
         queue.add_task(task, random_uuid)
