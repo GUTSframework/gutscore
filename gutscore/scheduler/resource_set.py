@@ -29,11 +29,11 @@ class ResourceSetBaseclass(metaclass=ABCMeta):
     specific attributes.
 
     Attributes:
-    _wgroup_id : The id of the workergroup this resource set is attached to.
-    _nworkers : The number of workers in the resource set
-    _runtime : The lifespan of the resource set
-    _workers : The actual worker's Processes
-    _worker_pids : Convenience list of worker's PID
+        _wgroup_id : The id of the workergroup this resource set is attached to.
+        _nworkers : The number of workers in the resource set
+        _runtime : The lifespan of the resource set
+        _workers : The actual worker's Processes
+        _worker_pids : Convenience list of worker's PID
     """
     def __init__(self,
                  wgroup_id : int,
