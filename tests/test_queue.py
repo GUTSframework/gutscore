@@ -1,4 +1,5 @@
 """Tests for the scheduler.Queue class."""
+import time
 import uuid
 from pathlib import Path
 import pytest
@@ -49,6 +50,7 @@ def test_add_task_with_unknown_deps():
     random_uuid = uuid.uuid4()
     with pytest.raises(RuntimeError):
         queue.add_task(task, random_uuid)
+    time.sleep(0.5)
     queue.delete(timeout=1)
 
 def test_mark_task_done():
@@ -118,4 +120,27 @@ def test_update_worker_status():
     queue.register_worker((0,0))
     queue.update_worker_status((0,0), "working")
     assert queue.get_active_workers_count() == 1
+    queue.delete(timeout=0.2)
+
+def test_register_worker_group():
+    """Test registering a worker group."""
+    queue = Queue()
+    queue.register_worker_group(1)
+    assert queue.check_worker_group(1) == "pending"
+    queue.delete(timeout=0.2)
+
+def test_unregister_worker_group():
+    """Test unregistering a worker group."""
+    queue = Queue()
+    queue.register_worker_group(0)
+    queue.unregister_worker_group(0)
+    assert queue.get_worker_groups_count() == 0
+    queue.delete(timeout=0.2)
+
+def test_update_worker_group_status():
+    """Test registering a worker."""
+    queue = Queue()
+    queue.register_worker_group(0)
+    queue.update_worker_group_status(0, "working")
+    assert queue.check_worker_group(0) == "working"
     queue.delete(timeout=0.2)
