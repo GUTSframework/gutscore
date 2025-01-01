@@ -289,7 +289,7 @@ class Queue:
         event_data = cursor.fetchone()
 
         if event_data:
-            event_id, acc_count, event_json, status = event_data
+            event_id, acc_count, event_json, _ = event_data
             acc_count = acc_count + 1
             cursor.execute("UPDATE events SET acc_count = ? WHERE id = ?", (acc_count, event_id))
             conn.commit()
@@ -453,7 +453,7 @@ class Queue:
         wgroup_data = cursor.fetchone()
 
         if wgroup_data:
-            resource_set, status = wgroup_data
+            resource_set, _ = wgroup_data
             cursor.execute("UPDATE worker_groups SET status = ? WHERE id = ?", ("active", gid))
             conn.commit()
             conn.close()
