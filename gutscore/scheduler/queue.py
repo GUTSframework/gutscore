@@ -364,6 +364,111 @@ class Queue:
         """
         return self._exec_sql_getone('SELECT COUNT() FROM workers WHERE status = "working"')
 
+    def register_worker_group(self,
+                              gid : int,
+                              status : str | None = None) -> None:
+        """Register a worker group in the queue.
+
+        Args:
+            gid : The worker group id
+            status : The worker group status
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        if status is None:
+            cursor.execute("INSERT INTO worker_groups(id) VALUES (?)", (gid,))
+        else:
+            cursor.execute("INSERT INTO worker_groups(id, status) VALUES (?,?)", (gid,status))
+        conn.commit()
+        conn.close()
+
+    def unregister_worker_group(self,
+                                gid : int) -> None:
+        """Unregister a worker group from the queue.
+
+        Args:
+            gid : The worker group id
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM worker_groups WHERE id = ?", (gid,))
+        conn.commit()
+        conn.close()
+
+    def check_worker_group(self,
+                           gid : int) -> str:
+        """Return the status of a given worker group.
+
+        Args:
+            gid : The worker group id
+
+        Returns:
+            The worker group status
+        """
+        return str(self._exec_sql_getone("SELECT status FROM worker_groups WHERE id = ?", (gid,)))
+
+    def update_worker_group_status(self,
+                                   gid : int,
+                                   status : str) -> None:
+        """Update the worker group status in queue.
+
+        Args:
+            gid : The worker group id
+            status : The worker group status
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE worker_groups SET status = ? WHERE id = ?", (status, gid))
+        conn.commit()
+        conn.close()
+
+    def update_worker_group_resources(self,
+                                      gid : int,
+                                      resource : str) -> None:
+        """Update the worker group resources set in queue.
+
+        Args:
+            gid : The worker group id
+            resource : The resource set as a json string
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE worker_groups SET resource_set_json = ? WHERE id = ?", (resource, gid))
+        conn.commit()
+        conn.close()
+
+    def get_worker_group_resource(self,
+                                  gid : int) -> str | None:
+        """Query the queue to get a given workergroup resource.
+
+        Args:
+            gid : The worker group id
+
+        Returns:
+            The resource set
+        """
+        conn = self._connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT resource_set_json, status FROM worker_groups WHERE id = ?", (gid,))
+        wgroup_data = cursor.fetchone()
+
+        if wgroup_data:
+            resource_set, status = wgroup_data
+            cursor.execute("UPDATE worker_groups SET status = ? WHERE id = ?", ("active", gid))
+            conn.commit()
+            conn.close()
+            return resource_set
+        conn.close()
+        return None
+
+    def get_worker_groups_count(self) -> int:
+        """Return the number of worker groups.
+
+        Returns:
+            The number of worker groups
+        """
+        return self._exec_sql_getone("SELECT COUNT() FROM worker_groups")
+
     def delete(self,
                timeout : int = 60) -> None:
         """Delete the DB when all tasks and workers are done.
