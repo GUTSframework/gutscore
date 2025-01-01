@@ -221,7 +221,7 @@ class ResourceSetLocal(ResourceSetBaseclass):
         toml_file = f"input_WG{self._wgroup_id:05d}.toml"
         wgroup_config = dict(config)
         wgroup_config[f"WG{self._wgroup_id:05d}"] = {"NullField" : 0}
-        with Path(toml_file).open("wb") as f:
+        with Path(toml_file).open("w") as f:
             toml.dump(wgroup_config, f)
 
         # Request command
@@ -322,7 +322,7 @@ class ResourceSetSlurm(ResourceSetBaseclass):
         toml_file = f"input_WG{self._wgroup_id:05d}.toml"
         wgroup_config = dict(config)
         wgroup_config[f"WG{self._wgroup_id:05d}"] = {"NullField" : 0}
-        with Path(toml_file).open("wb") as f:
+        with Path(toml_file).open("w") as f:
             toml.dump(wgroup_config, f)
 
         try:
