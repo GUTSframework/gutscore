@@ -267,7 +267,7 @@ class SlurmCluster:
             raise ValueError(err_msg)
 
         # Check time format and limit
-        time = res_config.get("time")
+        time = res_config.get("runtime")
         if not time:
             err_msg = "No runtime specified ! Use d-hh:mm:ss Slurm format"
             raise ValueError(err_msg)
@@ -321,7 +321,7 @@ def make_job_script_wgroup(wgroup_id : int,
     job_script.append(f"{_slurm_dir_prefix} --job-name=GUTS_WG{wgroup_id:05d}")
 
     # Append mandatory directives
-    runtime = res_config.get("time")
+    runtime = res_config.get("runtime")
     partition = res_config.get("partition")
     nnodes = res_config.get("nodes")
     job_script.append(f"{_slurm_dir_prefix} --time={runtime}")

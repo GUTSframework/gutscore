@@ -56,10 +56,10 @@ def test_failcheck_res_config():
     res_config = {"nodes": 1}                           # Missing time
     with pytest.raises(ValueError):
         slurm_cluster.process_res_config(res_config)
-    res_config = {"nodes": 1, "time": "01:100:00"}      # Wrong time format
+    res_config = {"nodes": 1, "runtime": "01:100:00"}      # Wrong time format
     with pytest.raises(ValueError):
         slurm_cluster.process_res_config(res_config)
-    res_config = {"nodes": 1000000, "time": "01:00:00"} # Too many nodes
+    res_config = {"nodes": 1000000, "runtime": "01:00:00"} # Too many nodes
     with pytest.raises(ValueError):
         slurm_cluster.process_res_config(res_config)
 
