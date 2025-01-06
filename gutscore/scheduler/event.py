@@ -1,7 +1,15 @@
 """A class to represent scheduler events."""
 from __future__ import annotations
 import json
+import logging
+import sys
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from scheduler.queue import Queue
+
+_logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -43,3 +51,16 @@ class Event:
         return Event(event_dict["id"],
                      event_dict["action"],
                      event_dict["target"])
+
+def stop_worker(wid : tuple[int,int],
+                queue : Queue) -> None:
+    """Action to stop a worker."""
+    queue.unregister_worker(wid)
+    info_msg = f"Worker {wid} stopped."
+    _logger.info(info_msg)
+    sys.exit(0)
+
+# Dictionary of event actions
+event_actions_dict = {
+        "worker-kill": stop_worker,
+        }
