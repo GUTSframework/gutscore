@@ -297,12 +297,12 @@ class ResourceSetSlurm(ResourceSetBaseclass):
         if res_config:
             self._slurm_job_id = None
             self._slurm_job_script = self._build_job_script(self._wgroup_id, res_config)
-            self._runtime = time_to_s(res_config.get("time", None))
+            self._runtime = time_to_s(res_config.get("runtime", None))
         if json_str:
             json_dict = json.loads(json_str)
             self._slurm_job_id = json_dict.get("job_id")
             self._slurm_job_script = json_dict.get("job_script")
-            self._runtime = time_to_s(json_dict.get("time"))
+            self._runtime = time_to_s(json_dict.get("runtime"))
 
     def request(self, config : dict[Any,Any]) -> None:
         """Request the resources of the set.

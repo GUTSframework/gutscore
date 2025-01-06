@@ -25,6 +25,7 @@ def test_oversubscribe_resources():
     with pytest.raises(RuntimeError):
         _ = manager.get_resources(res_config, 0)
 
+@pytest.mark.usefixtures("slurm_not_available")
 def test_slurm_withoutslurm():
     """Test creating a resource manager without SLURM."""
     config = {"resource" : {"nwgroups": 1, "backend" : "slurm"}}

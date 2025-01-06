@@ -253,7 +253,7 @@ class SlurmCluster:
         """
         # Check partition name if provided
         partition = res_config.get("partition")
-        if partition not in self._all_part_nnodes:
+        if partition and partition not in self._all_part_nnodes:
             err_msg = f"Partition {partition} unknown!"
             raise ValueError(err_msg)
 
