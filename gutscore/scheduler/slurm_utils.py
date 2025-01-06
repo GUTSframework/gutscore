@@ -61,6 +61,11 @@ def time_to_s(slurm_time : str) -> int:
     Raises:
         ValueError : If the input string is not properly formatted
     """
+    # There is a chance time is "infinite"
+    # -> Make that 10 days
+    if slurm_time.strip() == "infinite":
+        return 10 * 60 * 3600 * 24
+
     ndays = "0"
     if slurm_time.find("-") == -1:
         hms = slurm_time.split(":")
