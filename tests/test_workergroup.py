@@ -1,8 +1,10 @@
 """Tests for the gutscore.workergroup class."""
 
+import time
 import pytest
 from scheduler.queue import Queue
 from scheduler.resource_manager import ResourceManager
+from scheduler.task import Task
 from scheduler.workergroup import WorkerGroup
 
 
@@ -76,3 +78,41 @@ def test_request_resources_with_queue_erroneous_res():
     with pytest.raises(RuntimeError):
         wgroup.request_resources(manager)
     queue.delete(timeout=2)
+
+def test_request_resources_with_queue():
+    """Test creating a workergroup, requiring resources and a queue."""
+    # Setup wgroup
+    config = {"case" : {"queue_file" : "myqueue.db"}}
+    res_config = {"nworkers": 2, "runtime": 1}
+    wgroup = WorkerGroup(0, config, res_config)
+    # Attach queue
+    queue = Queue("myqueue.db")
+    wgroup.attach_queue(queue)
+    # Define resource manager and request resources for the group
+    manager = ResourceManager(config)
+    wgroup.request_resources(manager)
+    # Check queue for
+    assert queue.get_worker_groups_count() == 1
+    assert queue.get_worker_group_resource is not None
+    time.sleep(0.2)
+    queue.delete(timeout=1.0)
+
+def test_request_resources_with_queue_and_tasks():
+    """Test creating a workergroup, with resources, queue and tasks."""
+    # Setup wgroup
+    config = {"case" : {"queue_file" : "myqueue.db"}}
+    res_config = {"nworkers": 2, "runtime": 3}
+    wgroup = WorkerGroup(0, config, res_config)
+    # Attach queue
+    queue = Queue("myqueue.db")
+    for _ in range(10):
+        queue.add_task(Task("nap_test", {"nap_duration": 0.1}))
+    wgroup.attach_queue(queue)
+    # Define resource manager and request resources for the group
+    manager = ResourceManager(config)
+    wgroup.request_resources(manager)
+    # Give times for tasks to run
+    time.sleep(2)
+    # Check queue for number of tasks done
+    assert queue.get_completed_tasks() == 10
+    queue.delete(timeout=5)
