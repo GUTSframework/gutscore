@@ -1,6 +1,10 @@
 """Tests for the scheduler.slurm_utils functions."""
+import time
 import pytest
 from scheduler.slurm_utils import SlurmCluster
+from scheduler.slurm_utils import cancel_slurm_job
+from scheduler.slurm_utils import get_inqueue_slurm_jobs
+from scheduler.slurm_utils import get_past_slurm_jobs
 from scheduler.slurm_utils import is_slurm_avail
 from scheduler.slurm_utils import make_job_script_wgroup
 from scheduler.slurm_utils import submit_slurm_job
@@ -87,3 +91,35 @@ def test_submit_job():
     job_script = make_job_script_wgroup(0, up_config)
     job_id = submit_slurm_job(0, job_script)
     assert job_id is not None
+    cancel_slurm_job(job_id)
+
+@pytest.mark.usefixtures("slurm_available")
+def test_submit_and_query_job():
+    """Test submitting a Slurm job to the queue and querying slurm."""
+    slurm_cluster = SlurmCluster()
+    res_config = {"nodes": 1, "time": "00:01:00",
+                  "extra_directives": {"--exclusive" : None,
+                                       "--hold": None}}
+    up_config = slurm_cluster.process_res_config(res_config)
+    job_script = make_job_script_wgroup(0, up_config)
+    job_id = submit_slurm_job(0, job_script)
+    assert job_id is not None
+    running_jobs = get_inqueue_slurm_jobs()
+    assert any(d["id"] == job_id for d in running_jobs)
+    cancel_slurm_job(job_id)
+
+@pytest.mark.usefixtures("slurm_available")
+def test_submit_and_cancel_job():
+    """Test submitting and deleting a Slurm job to/from the queue."""
+    slurm_cluster = SlurmCluster()
+    res_config = {"nodes": 1, "time": "00:01:00",
+                  "extra_directives": {"--exclusive" : None}}
+    up_config = slurm_cluster.process_res_config(res_config)
+    job_script = make_job_script_wgroup(0, up_config)
+    job_id = submit_slurm_job(0, job_script)
+    assert job_id is not None
+    cancel_slurm_job(job_id)
+    # Time needed for slurm to update its internals
+    time.sleep(5.0)
+    past_jobs = get_past_slurm_jobs()
+    assert any(d["id"] == job_id for d in past_jobs)

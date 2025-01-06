@@ -6,6 +6,7 @@ import shlex
 import subprocess
 from pathlib import Path
 from typing import Any
+from scheduler.sys_utils import get_username
 
 _logger = logging.getLogger(__name__)
 
@@ -391,5 +392,137 @@ def submit_slurm_job(wgroup_id : int,
 
     except subprocess.CalledProcessError:
         err_msg = f"Unable to submit job to Slurm queue for wgroup {wgroup_id}"
+        _logger.exception(err_msg)
+        raise
+
+def get_inqueue_slurm_jobs() -> list[dict[Any,Any]]:
+    """Get the list of jobs currently in queue.
+
+    Returns:
+        list of currently running jobs with main job info
+    """
+    squeue = "squeue"
+    user = get_username()
+
+    job_list = []
+
+    squeue_cmd = [squeue]
+    squeue_cmd.append("-u")
+    squeue_cmd.append(user)
+    squeue_cmd.append("--format='%i %P %j %t %M %D'")
+    try:
+        result = subprocess.run(squeue_cmd, stdout=subprocess.PIPE, check=False)
+        header_msg = "JOBID PARTITION"
+        stdout = result.stdout.decode("utf-8")
+        if header_msg not in stdout:
+            slurm_err = result.stderr.decode("utf-8")
+            err_msg = f"Unable to query currently running jobs. Error {slurm_err}"
+            _logger.exception(err_msg)
+            raise RuntimeError(err_msg)
+        job_raw_list = stdout.split("\n")[1:-1]
+        for job in job_raw_list:
+            job_id, part, jname, status, rtime, nnode = job[1:-1].split(" ")
+            job_list.append({"id" : int(job_id),
+                             "partition" : part,
+                             "name" : jname,
+                             "status" : status,
+                             "nnode" : int(nnode),
+                             "runtime" : rtime})
+    except subprocess.CalledProcessError:
+        err_msg = "Unable to query job from Slurm queue"
+        _logger.exception(err_msg)
+        raise
+    else:
+        return job_list
+
+    return job_list
+
+def get_past_slurm_jobs() -> list[dict[Any,Any]]:
+    """Get the list of jobs recently submitted.
+
+    Returns:
+        list of past jobs with main job info
+    """
+    sacct = "sacct"
+    user = get_username()
+
+    job_list = []
+
+    sacct_cmd = [sacct]
+    sacct_cmd.append("-u")
+    sacct_cmd.append(user)
+    sacct_cmd.append("-X")
+    sacct_cmd.append("-o")
+    sacct_cmd.append("jobid,partition,jobname,state,time,nnodes")
+    try:
+        result = subprocess.run(sacct_cmd, stdout=subprocess.PIPE, check=False)
+        header_msg = "JobID"
+        stdout = result.stdout.decode("utf-8")
+        if header_msg not in stdout:
+            slurm_err = result.stderr.decode("utf-8")
+            err_msg = f"Unable to query past jobs. Error {slurm_err}"
+            _logger.exception(err_msg)
+            raise RuntimeError(err_msg)
+        job_raw_list = stdout.split("\n")[2:-1]
+        for job in job_raw_list:
+            clean_job = " ".join(job.split())
+            job_id, part, jname, state, wtime, nnode = clean_job.split(" ")
+            job_list.append({"id" : int(job_id),
+                             "partition" : part,
+                             "name" : jname,
+                             "state" : state,
+                             "nnode" : int(nnode),
+                             "walltime" : wtime})
+    except subprocess.CalledProcessError:
+        err_msg = "Unable to query past job from Slurm queue"
+        _logger.exception(err_msg)
+        raise
+    else:
+        return job_list
+
+    return job_list
+
+def cancel_slurm_job(job_id : int) -> None:
+    """Cancel a job.
+
+    Args:
+        job_id : the slurm id of the job to cancel
+    """
+    scancel = "scancel"
+
+    # Get the list of jobs in queue
+    inqueue_jobs = get_inqueue_slurm_jobs()
+    is_running = any(d["id"] == job_id for d in inqueue_jobs)
+
+    # Check jobs history
+    is_past = False
+    if not is_running:
+        past_jobs = get_past_slurm_jobs()
+        is_past = any(d["id"] == job_id for d in past_jobs)
+
+    # Log a warning whern attempting to cancel finished job
+    # do not raise error
+    if is_past:
+        warn_msg = f"Attempt to cancel already finished job {job_id}"
+        _logger.warning(warn_msg)
+        return
+
+    # Do not raise error if job is neither running or past
+    if not (is_past or is_running):
+        warn_msg = f"Attempt to cancel already unknown job {job_id}"
+        _logger.warning(warn_msg)
+
+    # Try to cancel
+    sbatch_cmd = [scancel]
+    sbatch_cmd.append(str(job_id))
+    try:
+        result = subprocess.run(sbatch_cmd, stdout=subprocess.PIPE, check=False)
+        if result.returncode != 0:
+            slurm_err = result.stderr.decode("utf-8")
+            err_msg = f"Unable to cancel job {job_id} from Slurm queue. Error {slurm_err}"
+            _logger.exception(err_msg)
+            raise RuntimeError(err_msg)
+    except subprocess.CalledProcessError:
+        err_msg = f"Unable to cancel job {job_id} from Slurm queue."
         _logger.exception(err_msg)
         raise
