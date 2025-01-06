@@ -1,5 +1,6 @@
 """Tests for the scheduler.resource_manager class."""
 import pytest
+import json
 from scheduler.resource_manager import ResourceManager
 from scheduler.sys_utils import get_cpu_count
 
@@ -24,3 +25,17 @@ def test_oversubscribe_resources():
     res_config = {"nworkers": get_cpu_count() + 1}
     with pytest.raises(RuntimeError):
         _ = manager.get_resources(res_config, 0)
+
+def test_slurm_withoutslurm():
+    """Test creating a resource manager without SLURM."""
+    config = {"resource" : {"nwgroups": 1, "backend" : "slurm"}}
+    with pytest.raises(RuntimeError):
+        _ = ResourceManager(config)
+
+def test_instanciate_backendmix():
+    """Test creating a resource manager with a mix of backends."""
+    config = {"resource" : {"nwgroups": 1}}
+    manager = ResourceManager(config)
+    json_res = '{"type":"slurm"}'
+    with pytest.raises(ValueError):
+        _ = manager.instanciate_resource(json_res)
