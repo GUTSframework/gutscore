@@ -1,8 +1,10 @@
 """A worker group class for the gutscore scheduler."""
 from __future__ import annotations
 import logging
+from multiprocessing import Process
 from typing import TYPE_CHECKING
 from typing import Any
+from scheduler.worker import worker_function
 
 if TYPE_CHECKING:
     from scheduler.queue import Queue
@@ -135,3 +137,15 @@ class WorkerGroup:
             err_msg = f"Unable to get resource set for wgroup {self._wgroup_id} from queue !"
             raise RuntimeError(err_msg)
         self._resource_set = manager.instanciate_resource(res_json)
+
+        w_runtime = self._resource_set.worker_runtime()
+        wid = 0
+        while not self._resource_set.workers_initiated():
+            # Each worker runs the `worker_function` in a separate process
+            self._resource_set.append_worker_process(Process(target=worker_function,
+                                                             args=(self._queue,
+                                                                   self._wgroup_id,
+                                                                   wid,
+                                                                   100,
+                                                                   w_runtime)))
+            wid = wid + 1
