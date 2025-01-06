@@ -105,7 +105,7 @@ class Scheduler:
     def run_wgroup(self) -> None:
         """Run a given workergroup.
 
-        Raises :
+        Raises:
             RuntimeError : If there is no workergroup targeted to run
         """
         if (self._wgroup_id_respawn >= self._nwgroups or
@@ -118,7 +118,7 @@ class Scheduler:
     def wgroup_id_respawn(self) -> int:
         """Access the target respawn wgroup id.
 
-        Returns :
+        Returns:
             The id of the wgroup to respawn
         """
         return self._wgroup_id_respawn
@@ -132,7 +132,7 @@ class Scheduler:
     def get_queue(self) -> Queue:
         """Return the scheduler queue.
 
-        Returns :
+        Returns:
             The scheduler queue
         """
         return self._queue

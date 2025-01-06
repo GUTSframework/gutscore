@@ -19,7 +19,7 @@ class WorkerGroup:
     the allocation of the compute resources to workers
     within the gutscore scheduler.
 
-    Attributes :
+    Attributes:
         _config : A dictionary of configuration parameters
         _wgroup_id : The group id number
         _resource_config : A dictionary describing the compute resources associated to the group
@@ -33,7 +33,7 @@ class WorkerGroup:
                  queue : Queue | None = None) -> None:
         """Initialize the worker group.
 
-        Args :
+        Args:
             wgroup_id : The group id number
             config : The scheduler top-level dictionary of configuration parameters
             resource_config : A dictionary describing the compute resources associated to the group
@@ -56,7 +56,7 @@ class WorkerGroup:
     def id(self) -> int:
         """Get the id of the worker group.
 
-        Returns :
+        Returns:
             The id of the worker group
         """
         return self._wgroup_id
@@ -64,7 +64,7 @@ class WorkerGroup:
     def get_queue(self) -> Queue | None:
         """Get the queue of the worker group.
 
-        Returns :
+        Returns:
             The queue of the worker group
         """
         return self._queue
@@ -72,10 +72,10 @@ class WorkerGroup:
     def attach_queue(self, queue : Queue) -> None:
         """Attach a queue to the worker group.
 
-        Args :
+        Args:
             queue : A Queue with which the wgroup will interact
 
-        Raises :
+        Raises:
             RuntimeError : If the workergroup already has a queue attached
         """
         if not self._queue:
@@ -93,7 +93,7 @@ class WorkerGroup:
         relinquishing the control of the program to a subprocess in
         order to harmonize workflow accross various resource backend.
 
-        Args :
+        Args:
             manager : A ResourceManager from which to get the resources
 
         Raises:
@@ -120,7 +120,7 @@ class WorkerGroup:
         Resources are looked up from the queue, checked in the current
         environment and worker are fired up.
 
-        Args :
+        Args:
             manager : A ResourceManager to handle resource set and checks
 
         Raises:

@@ -54,7 +54,12 @@ class Event:
 
 def stop_worker(wid : tuple[int,int],
                 queue : Queue) -> None:
-    """Action to stop a worker."""
+    """Action to stop a worker.
+
+    Args:
+        wid : the worker ID
+        queue : the Queue from which the event was caught
+    """
     queue.unregister_worker(wid)
     info_msg = f"Worker {wid} stopped."
     _logger.info(info_msg)

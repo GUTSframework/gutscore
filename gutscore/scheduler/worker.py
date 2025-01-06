@@ -15,7 +15,7 @@ def worker_function(queue : Queue,
                     runtime : int) -> None:
     """Worker function that will run be executed in a separate process.
 
-    Args :
+    Args:
         queue : A Queue with which the wgroup will interact
         wgroup_id : The id of the wgroup
         worker_id : The id of the worker
@@ -90,7 +90,7 @@ def process_event(event : Event,
                   queue : Queue) -> None:
     """Process the event action.
 
-    Args :
+    Args:
         event: serialized event dictionary
         wid: the worker ID
         queue: the Queue from which the event was caught
