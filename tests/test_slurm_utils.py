@@ -67,7 +67,7 @@ def test_failcheck_res_config():
 def test_success_check_res_config():
     """Test for resource config succeful processing."""
     slurm_cluster = SlurmCluster()
-    res_config = {"nodes": 1, "time": "01:00:00"}
+    res_config = {"nodes": 1, "runtime": "01:00:00"}
     up_config = slurm_cluster.process_res_config(res_config)
     assert res_config["nodes"] == up_config["nodes"]
 
@@ -75,7 +75,7 @@ def test_success_check_res_config():
 def test_build_script():
     """Test assembling a slurm script from resource config."""
     slurm_cluster = SlurmCluster()
-    res_config = {"nodes": 1, "time": "00:05:00"}
+    res_config = {"nodes": 1, "runtime": "00:05:00"}
     up_config = slurm_cluster.process_res_config(res_config)
     job_script = make_job_script_wgroup(0, up_config)
     assert job_script is not None
@@ -84,7 +84,7 @@ def test_build_script():
 def test_submit_job():
     """Test submitting a Slurm job to the queue."""
     slurm_cluster = SlurmCluster()
-    res_config = {"nodes": 1, "time": "00:01:00",
+    res_config = {"nodes": 1, "runtime": "00:01:00",
                   "extra_directives": {"--exclusive" : None,
                                        "--hold": None}}
     up_config = slurm_cluster.process_res_config(res_config)
@@ -97,7 +97,7 @@ def test_submit_job():
 def test_submit_and_query_job():
     """Test submitting a Slurm job to the queue and querying slurm."""
     slurm_cluster = SlurmCluster()
-    res_config = {"nodes": 1, "time": "00:01:00",
+    res_config = {"nodes": 1, "runtime": "00:01:00",
                   "extra_directives": {"--exclusive" : None,
                                        "--hold": None}}
     up_config = slurm_cluster.process_res_config(res_config)
@@ -112,7 +112,7 @@ def test_submit_and_query_job():
 def test_submit_and_cancel_job():
     """Test submitting and deleting a Slurm job to/from the queue."""
     slurm_cluster = SlurmCluster()
-    res_config = {"nodes": 1, "time": "00:01:00",
+    res_config = {"nodes": 1, "runtime": "00:01:00",
                   "extra_directives": {"--exclusive" : None}}
     up_config = slurm_cluster.process_res_config(res_config)
     job_script = make_job_script_wgroup(0, up_config)
