@@ -65,6 +65,9 @@ publishing = [
 Repository = "https://github.com/GUTSframework/gutscore"
 Issues = "https://github.com/GUTSframework/gutscore/issues"
 
+[project.scripts]
+run_workergroup = "bin:sched_workergroup"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
