@@ -261,7 +261,7 @@ class SlurmCluster:
         if not partition:
             partition = self._default_partition
 
-        if not partition and not self._default_partition:
+        if not partition:
             err_msg = "Partition not provided and system has no default!"
             raise ValueError(err_msg)
 

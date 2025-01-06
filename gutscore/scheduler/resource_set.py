@@ -302,7 +302,7 @@ class ResourceSetSlurm(ResourceSetBaseclass):
             json_dict = json.loads(json_str)
             self._slurm_job_id = json_dict.get("job_id")
             self._slurm_job_script = json_dict.get("job_script")
-            self._runtime = time_to_s(json_dict.get("runtime"))
+            self._runtime = time_to_s(str(json_dict.get("runtime")))
 
     def request(self, config : dict[Any,Any]) -> None:
         """Request the resources of the set.
