@@ -191,6 +191,9 @@ class ResourceSetLocal(ResourceSetBaseclass):
             res_config : A dictionary describing the resource set
             json_str : A json string describing the resource set
         """
+        # Keep track of the subprocess pid of the run_workergroup CLI
+        self._run_wgroup_subproc_pid : int = -1
+
         if res_config:
             self._runtime = res_config.get("runtime", 100)
             self._daemonize = res_config.get("daemonize", False)
@@ -199,6 +202,7 @@ class ResourceSetLocal(ResourceSetBaseclass):
             json_dict = json.loads(json_str)
             self._runtime = json_dict.get("runtime", 100)
             self._daemonize = json_dict.get("daemonize", False)
+            self._run_wgroup_subproc_pid = json_dict.get("wgroup_CLI_pid", -1)
 
     def request(self, config : dict[Any,Any]) -> None:
         """Request the resources of the set.
@@ -237,10 +241,11 @@ class ResourceSetLocal(ResourceSetBaseclass):
         with Path(stdout_name).open("wb") as outf, \
              Path(stderr_name).open("wb") as errf:
             try:
-                subprocess.Popen(wgroup_cmd,
-                                 stdout = outf,
-                                 stderr = errf,
-                                 start_new_session=True)
+                p = subprocess.Popen(wgroup_cmd,
+                                     stdout = outf,
+                                     stderr = errf,
+                                     start_new_session=True)
+                self._run_wgroup_subproc_pid = p.pid
             except Exception:
                 err_msg = f"Unable to request resource using subprocess.Popen({wgroup_cmd})"
                 _logger.exception(err_msg)
@@ -258,6 +263,7 @@ class ResourceSetLocal(ResourceSetBaseclass):
             "nworkers": self._nworkers,
             "runtime": self._runtime,
             "daemonize": self._daemonize,
+            "wgroup_CLI_pid": self._run_wgroup_subproc_pid,
         })
 
     def from_json(self, resource_set_json : str) -> ResourceSetLocal:
@@ -297,7 +303,7 @@ class ResourceSetSlurm(ResourceSetBaseclass):
         if res_config:
             self._slurm_job_id = None
             self._slurm_job_script = self._build_job_script(self._wgroup_id, res_config)
-            self._runtime = time_to_s(res_config.get("runtime", None))
+            self._runtime = time_to_s(str(res_config.get("runtime")))
         if json_str:
             json_dict = json.loads(json_str)
             self._slurm_job_id = json_dict.get("job_id")
