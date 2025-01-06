@@ -1,6 +1,5 @@
 """Tests for the scheduler.resource_manager class."""
 import pytest
-import json
 from scheduler.resource_manager import ResourceManager
 from scheduler.sys_utils import get_cpu_count
 
