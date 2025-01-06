@@ -167,6 +167,8 @@ class Queue:
             cursor.execute("SELECT id FROM tasks WHERE uuid = ?", (deps,))
             data = cursor.fetchone()
             if data is None:
+                conn.commit()
+                conn.close()
                 err_msg = "Can't add dependencies to a non-existing task"
                 raise RuntimeError(err_msg)
             cursor.execute("INSERT INTO tasks (uuid, dep, task_json, status) VALUES (?, ?, ?, ?)",

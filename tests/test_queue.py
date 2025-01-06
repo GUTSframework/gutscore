@@ -1,5 +1,4 @@
 """Tests for the scheduler.Queue class."""
-import time
 import uuid
 from pathlib import Path
 import pytest
@@ -50,7 +49,6 @@ def test_add_task_with_unknown_deps():
     random_uuid = uuid.uuid4()
     with pytest.raises(RuntimeError):
         queue.add_task(task, random_uuid)
-    time.sleep(0.5)
     queue.delete(timeout=1)
 
 def test_mark_task_done():
