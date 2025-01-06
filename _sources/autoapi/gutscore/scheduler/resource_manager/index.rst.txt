@@ -1,0 +1,67 @@
+resource_manager
+================
+
+.. py:module:: gutscore.scheduler.resource_manager
+
+.. autoapi-nested-parse::
+
+   A resource manager class for the scheduler.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.resource_manager.ResourceManager
+
+
+Module Contents
+---------------
+
+.. py:class:: ResourceManager(configs: dict[Any, Any])
+
+   A resource manager class for gutscore scheduler.
+
+   The resource manager interface between the workergroups
+   and the compute resources of the system.
+
+   :ivar _nwgroups: The number of worker groups the manager has to handle
+   :ivar _backend: The type of compute resource available in the backend (local, slurm, ...)
+   :ivar _configs: The GUTS full parmeters dictionary, augmented if necessary
+
+
+
+   .. py:method:: get_nwgroups() -> int
+
+      Get the number of workergroups.
+
+      :returns: The number of workergroups
+
+
+
+   .. py:method:: get_resources(res_configs: dict[Any, Any], wgroup_id: int) -> scheduler.resource_set.ResourceSetBaseclass
+
+      Get the resources from the manager.
+
+      :param res_configs: A dictionary describing the resource set
+      :param wgroup_id: The id of the workergroup for which the resources are acquired
+
+      :returns: A resource set of the specified concrete type
+
+      :raises ValueError: If the resource specification has wrong parameters
+      :raises RuntimeError: If something went wrong while trying to acquire the resources
+
+
+
+   .. py:method:: instanciate_resource(res_json: str) -> scheduler.resource_set.ResourceSetBaseclass
+
+      Instanciate a resource set from a json string.
+
+      :param res_json: The json string produced by serialization of a resource set
+
+      :raises ValueError: When mixing backends or providing erroneous wgroup ids
+
+
+

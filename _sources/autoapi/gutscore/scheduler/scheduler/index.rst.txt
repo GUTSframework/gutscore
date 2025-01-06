@@ -1,0 +1,125 @@
+scheduler
+=========
+
+.. py:module:: gutscore.scheduler.scheduler
+
+.. autoapi-nested-parse::
+
+   A front end for gutscore scheduler.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.scheduler.Scheduler
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.scheduler.parse_cl_args
+
+
+Module Contents
+---------------
+
+.. py:function:: parse_cl_args(a_args: list[str] | None = None) -> argparse.Namespace
+
+   Parse provided list or default CL argv.
+
+   :param a_args: optional list of options
+
+
+.. py:class:: Scheduler(a_args: list[str] | None = None)
+
+   A scheduler class for gutscore.
+
+   The scheduler is the top-level, user-facing end of gutscore compute
+   system, which includes a disk-based queue, a resources manager
+   and a set of worker groups, each of which containing multiple
+   workers with a set of resources.
+
+   The scheduler is designed to not be persistent, but rather
+   respawned at will by the user or the individual worker group
+   themselves.
+
+   :ivar _params: The configuration parameters dictionary
+   :ivar _name: The scheduler name
+   :ivar _queue_file: The name of the guts_queue file associated with the scheduler
+   :ivar _queue: A Queue object with which the scheduler interacts
+   :ivar _manager: A ResourceManager to dispatch resources to worker groups
+   :ivar _wgroups: A list of WorkerGroup
+   :ivar _nwgroups: The number of WorkerGroups the scheduler manage
+
+
+
+   .. py:method:: start() -> None
+
+      Start the scheduler.
+
+      This a non-blocking call, where each workergroup is initiated
+      and launched seperately depending on the resource backend type.
+
+
+
+   .. py:method:: run_wgroup() -> None
+
+      Run a given workergroup.
+
+      :raises RuntimeError: If there is no workergroup targeted to run
+
+
+
+   .. py:method:: wgroup_id_respawn() -> int
+
+      Access the target respawn wgroup id.
+
+      :returns: The id of the wgroup to respawn
+
+
+
+   .. py:method:: check() -> None
+
+      Check the scheduler queue and workergroups status.
+
+
+
+   .. py:method:: restore() -> None
+
+      Restore the workergroups if needed.
+
+
+
+   .. py:method:: get_queue() -> scheduler.queue.Queue
+
+      Return the scheduler queue.
+
+      :returns: The scheduler queue
+
+
+
+   .. py:method:: add_task(task: scheduler.task.Task) -> None
+
+      Add a new task to the queue.
+
+      :param task: The task to add to the queue
+
+
+
+   .. py:method:: name() -> str
+
+      Return the case name.
+
+
+
+   .. py:method:: cleanup() -> None
+
+      Clean scheduler internals.
+
+
+

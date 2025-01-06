@@ -1,0 +1,117 @@
+task
+====
+
+.. py:module:: gutscore.scheduler.task
+
+.. autoapi-nested-parse::
+
+   A plain class to represent GUTS tasks.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   gutscore.scheduler.task.task_functions_reg
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.task.Task
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.task.register_taskf
+   gutscore.scheduler.task.unregister_taskf
+   gutscore.scheduler.task.nap_test
+   gutscore.scheduler.task.fail_test
+
+
+Module Contents
+---------------
+
+.. py:data:: task_functions_reg
+
+.. py:function:: register_taskf(function_name: str) -> Callable[Ellipsis, Any]
+
+   Add a task function in the register.
+
+   :param function_name: The name of the function
+
+   :returns: The decorated function
+
+
+.. py:function:: unregister_taskf(function_name: str) -> None
+
+   Remove a task function from the register.
+
+   :param function_name: The name of the function to remove
+
+
+.. py:function:: nap_test(nap_duration: float = 1.0) -> None
+
+   A test function used in testing the scheduler.
+
+   :param nap_duration: The number of seconds to sleep
+
+
+.. py:function:: fail_test() -> None
+
+   A failing test function used in testing the scheduler.
+
+
+.. py:class:: Task(function_name: str, args: dict[Any, Any] | None = None)
+
+   A class representing GUTS scheduler tasks.
+
+   Tasks are units of work that workers can execute. They can
+   be serialized, stored in the scheduler database and retrieved
+   later for execution.
+
+   The current implementation relies on an in-memory function register to map
+   function names stored in the tasks to Python concrete functions.
+   A disk-based function register might be better suited in this framework.
+
+   :ivar _function_name: The name of the function to call
+   :ivar _args: The optional arguments dictionary to pass to the function
+
+
+
+   .. py:method:: to_json() -> str
+
+      Serialize the task to a JSON string for storage.
+
+      :returns: The JSON string of the task
+
+
+
+   .. py:method:: from_json(task_json: str) -> Task
+      :staticmethod:
+
+
+      Deserialize a task from a JSON string.
+
+      :param task_json: The JSON string of the task
+
+      :returns: The deserialized task
+
+
+
+   .. py:method:: execute() -> None
+
+      Execute the task by calling the corresponding function.
+
+      :raises ValueError: If the function is not registered
+      :raises RuntimeError: If the function execution fails
+
+
+

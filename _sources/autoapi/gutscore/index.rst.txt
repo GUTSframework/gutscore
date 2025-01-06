@@ -1,0 +1,21 @@
+gutscore
+========
+
+.. py:module:: gutscore
+
+.. autoapi-nested-parse::
+
+   Documentation about gutscore.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/gutscore/bin/index
+   /autoapi/gutscore/scheduler/index
+
+

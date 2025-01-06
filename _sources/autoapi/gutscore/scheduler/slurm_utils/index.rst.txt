@@ -1,0 +1,146 @@
+slurm_utils
+===========
+
+.. py:module:: gutscore.scheduler.slurm_utils
+
+.. autoapi-nested-parse::
+
+   A set of SLURM utilities for gutscore.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.slurm_utils.SlurmCluster
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.slurm_utils.is_slurm_avail
+   gutscore.scheduler.slurm_utils.time_to_s
+   gutscore.scheduler.slurm_utils.make_job_script_wgroup
+   gutscore.scheduler.slurm_utils.submit_slurm_job
+   gutscore.scheduler.slurm_utils.get_inqueue_slurm_jobs
+   gutscore.scheduler.slurm_utils.get_past_slurm_jobs
+   gutscore.scheduler.slurm_utils.cancel_slurm_job
+
+
+Module Contents
+---------------
+
+.. py:function:: is_slurm_avail() -> bool
+
+   Assess if slurm is available on system.
+
+   Detect if Slurm is available in the compute environment.
+   First checking for environment variable, then checking
+   the `sinfo` command.
+
+   :returns: A boolean True if Slurm is detected, False otherwise
+
+
+.. py:function:: time_to_s(slurm_time: str) -> int
+
+   Convert a Slurm formatted time to seconds.
+
+   :param slurm_time: A Slurm formatted time d-hh:mm:ss
+
+   :returns: Time converted to seconds
+
+   :raises ValueError: If the input string is not properly formatted
+
+
+.. py:class:: SlurmCluster
+
+   A class to describe the Slurm HPC Cluster compute resources.
+
+   :ivar _sinfo_executable: Name or path to the sinfo executable, by default "sinfo".
+   :ivar _sacct_executable: Name or path to the sacct executable, by default "sacct".
+   :ivar _all_nodes: The list of nodes available
+   :ivar _all_partitions: The list of partitions available with number of nodes
+   :ivar _default_partition: Name of the default partition
+   :ivar _all_cpu_per_nodetypes: Number of CPUs available on each type of nodes
+   :ivar _all_gpu_per_nodetypes: Number of GPUs available on each type of nodes
+
+
+
+   .. py:method:: get_node_count() -> int
+
+      Get the number of nodes on the system.
+
+      :returns: number of nodes on the system
+
+
+
+   .. py:method:: get_partition_count() -> int
+
+      Get the number of partitions on the system.
+
+      :returns: number of partitions on the system
+
+
+
+   .. py:method:: process_res_config(res_config: dict[Any, Any]) -> dict[Any, Any]
+
+      Process the input config dictionary.
+
+      Check the sanity of the keys contained in the dictionary
+      and append identified missing keys with defaults.
+
+      :param res_config: A dictionary listing resource configuration
+
+      :returns: An updated dictionary listing resource configuration
+
+      :raises ValueError: If a configuration key as a wrong value (partition, node, ...)
+
+
+
+.. py:function:: make_job_script_wgroup(wgroup_id: int, res_config: dict[Any, Any]) -> list[str]
+
+   Assemble a workergroup job script from resource config.
+
+   :param wgroup_id: The workergroup index number
+   :param res_config: The resource configuration specification
+
+   :returns: A full Slurm batch script as a list of strings, one per line
+
+
+.. py:function:: submit_slurm_job(wgroup_id: int, job_script: list[str]) -> int
+
+   Submit a job to the Slurm queue.
+
+   :param wgroup_id: The workergroup index
+   :param job_script: The job batch script as a list of strings
+
+   :returns: The submitted SLURM_JOB_ID
+
+   :raises RuntimeError: If it fails to submit the batch script
+
+
+.. py:function:: get_inqueue_slurm_jobs() -> list[dict[Any, Any]]
+
+   Get the list of jobs currently in queue.
+
+   :returns: list of currently running jobs with main job info
+
+
+.. py:function:: get_past_slurm_jobs() -> list[dict[Any, Any]]
+
+   Get the list of jobs recently submitted.
+
+   :returns: list of past jobs with main job info
+
+
+.. py:function:: cancel_slurm_job(job_id: int) -> None
+
+   Cancel a job.
+
+   :param job_id: the slurm id of the job to cancel
+
+

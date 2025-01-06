@@ -1,0 +1,43 @@
+worker
+======
+
+.. py:module:: gutscore.scheduler.worker
+
+.. autoapi-nested-parse::
+
+   A set of functions making up the workers.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.worker.worker_function
+   gutscore.scheduler.worker.process_event
+
+
+Module Contents
+---------------
+
+.. py:function:: worker_function(queue: scheduler.queue.Queue, wgroup_id: int, worker_id: int, max_tasks: int, runtime: int) -> None
+
+   Worker function that will run be executed in a separate process.
+
+   :param queue: A Queue with which the wgroup will interact
+   :param wgroup_id: The id of the wgroup
+   :param worker_id: The id of the worker
+   :param max_tasks: The maximum number of tasks to be processed
+   :param runtime: The maximum runtime of the worker
+
+
+.. py:function:: process_event(event: scheduler.event.Event, wid: tuple[int, int], queue: scheduler.queue.Queue) -> None
+
+   Process the event action.
+
+   :param event: serialized event dictionary
+   :param wid: the worker ID
+   :param queue: the Queue from which the event was caught
+
+

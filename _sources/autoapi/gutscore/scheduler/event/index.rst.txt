@@ -1,0 +1,92 @@
+event
+=====
+
+.. py:module:: gutscore.scheduler.event
+
+.. autoapi-nested-parse::
+
+   A class to represent scheduler events.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   gutscore.scheduler.event.event_actions_dict
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.event.Event
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.event.stop_worker
+
+
+Module Contents
+---------------
+
+.. py:class:: Event
+
+   Event class, triggering specific worker behaviors.
+
+   :ivar eid: event id
+   :ivar action: an action name
+   :ivar target: an optional event target (wgroup, worker, ...)
+
+
+
+   .. py:attribute:: eid
+      :type:  int
+
+
+   .. py:attribute:: action
+      :type:  str
+
+
+   .. py:attribute:: target
+      :type:  str | None
+      :value: None
+
+
+
+   .. py:method:: to_json() -> str
+
+      Serialize the event to a JSON string for storage.
+
+      :returns: A JSON string
+
+
+
+   .. py:method:: from_json(event_json: str) -> Event
+      :staticmethod:
+
+
+      Deserialize an event from a JSON string.
+
+      :param event_json: a JSON string
+
+      :returns: An event
+
+
+
+.. py:function:: stop_worker(wid: tuple[int, int], queue: scheduler.queue.Queue) -> None
+
+   Action to stop a worker.
+
+   :param wid: the worker ID
+   :param queue: the Queue from which the event was caught
+
+
+.. py:data:: event_actions_dict
+

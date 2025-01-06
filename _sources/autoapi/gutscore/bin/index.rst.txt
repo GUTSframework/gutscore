@@ -1,0 +1,27 @@
+bin
+===
+
+.. py:module:: gutscore.bin
+
+.. autoapi-nested-parse::
+
+   The CLI functions for the gutscore scheduler.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.bin.sched_workergroup
+
+
+Module Contents
+---------------
+
+.. py:function:: sched_workergroup() -> None
+
+   Start a workergroup from a guts scheduler.
+
+

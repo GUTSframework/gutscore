@@ -1,0 +1,230 @@
+resource_set
+============
+
+.. py:module:: gutscore.scheduler.resource_set
+
+.. autoapi-nested-parse::
+
+   The resource_set classes for the gutscore.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.resource_set.ResourceSetBaseclass
+   gutscore.scheduler.resource_set.ResourceSetLocal
+   gutscore.scheduler.resource_set.ResourceSetSlurm
+
+
+Module Contents
+---------------
+
+.. py:class:: ResourceSetBaseclass(wgroup_id: int, res_config: dict[Any, Any] | None = None, json_str: str | None = None)
+
+   A resource set base class for gutscore scheduler.
+
+   A resource set base class, defining the API
+   expected by the resource_manager class.
+
+   The base class is responsible for the public initialization,
+   while concrete implementation relies on `_init_rs` to set
+   specific attributes.
+
+   :ivar _wgroup_id: The id of the workergroup this resource set is attached to.
+   :ivar _nworkers: The number of workers in the resource set
+   :ivar _runtime: The lifespan of the resource set
+   :ivar _workers: The actual worker's Processes
+   :ivar _worker_pids: Convenience list of worker's PID
+
+
+
+   .. py:method:: request(config: dict[Any, Any]) -> None
+      :abstractmethod:
+
+
+      Request the resources of the set.
+
+      A non-blocking call responsible of using subprocess to request
+      the resources of the set from the system.
+
+      :param config: The gutscore top-level configuration parameters dictionary.
+
+
+
+   .. py:method:: serialize() -> str
+      :abstractmethod:
+
+
+      Serialize the resource set.
+
+      :returns: A json_string describing the acquire resources, to be stored in the queue
+
+
+
+   .. py:method:: from_json(resource_set_json: str) -> ResourceSetBaseclass
+      :abstractmethod:
+
+
+      Deserialize the resource set.
+
+      :param resource_set_json: A json string version of the resource set
+
+      :returns: An instance of the particular derived class object
+
+
+
+   .. py:method:: release() -> None
+      :abstractmethod:
+
+
+      Release the resources of the set.
+
+      :raises RuntimeError: If something went wrong while releasing the resource
+
+
+
+   .. py:method:: get_nworkers() -> int
+
+      Get the (theoretical) number of workers.
+
+      :returns: The (theoretical) number of workers
+
+
+
+   .. py:method:: get_nworkers_active() -> int
+
+      Get the active number of workers.
+
+      :returns: The active number of workers
+
+
+
+   .. py:method:: workers_initiated() -> bool
+
+      Test if all workers are initiated.
+
+      :returns: True if all workers are initiated
+
+
+
+   .. py:method:: append_worker_process(process: multiprocessing.Process) -> None
+
+      Add a worker process to the list.
+
+      :param process: a worker process
+
+
+
+   .. py:method:: worker_runtime() -> int
+
+      Return the worker runtime.
+
+      :returns: The worker runtime [s]
+
+
+
+.. py:class:: ResourceSetLocal(wgroup_id: int, res_config: dict[Any, Any] | None = None, json_str: str | None = None)
+
+   Bases: :py:obj:`ResourceSetBaseclass`
+
+
+   A local resource set class for gutscore scheduler.
+
+   Manage the resource available locally in the session.
+   This is the appropriate backend when working on a personal
+   computer.
+
+   :ivar _runtime: A runtime limit in seconds
+   :ivar _deamonize: Release the main process, effectively daemonizing the workers ?
+
+
+
+   .. py:method:: request(config: dict[Any, Any]) -> None
+
+      Request the resources of the set.
+
+      Use subprocess to launch the run_workergroup CLI
+      with proper arguments.
+
+      :param config: The GUTS top-level configuration parameters dictionary.
+
+      :raises RuntimeError: If it fails to create the child process
+
+
+
+   .. py:method:: serialize() -> str
+
+      Serialize the local resource set.
+
+      :returns: A json string version of the resource set
+
+
+
+   .. py:method:: from_json(resource_set_json: str) -> ResourceSetLocal
+
+      Deserialize the local resource set.
+
+      :param resource_set_json: A json string version of the resource set
+
+      :returns: The deserialized resource set
+
+
+
+   .. py:method:: release() -> None
+
+      Release the resources.
+
+
+
+.. py:class:: ResourceSetSlurm(wgroup_id: int, res_config: dict[Any, Any] | None = None, json_str: str | None = None)
+
+   Bases: :py:obj:`ResourceSetBaseclass`
+
+
+   A slurm resource set class for the gutscore scheduler..
+
+   Manage the resource available on an HPC cluster with the Slurm
+   job scheduler.
+
+   Attributes:
+   _slurm_job_id : The Slurm job ID, obtained after the job is submitted to the scheduler
+   _slurm_job_script : The Slurm batch script, assembled from resource set description
+
+
+   .. py:method:: request(config: dict[Any, Any]) -> None
+
+      Request the resources of the set.
+
+      :param config: The scheduler top-level configuration parameters dictionary.
+
+      :raises RuntimeError: If it fails to submit the batch script
+
+
+
+   .. py:method:: serialize() -> str
+
+      Serialize the slurm resource set.
+
+      :returns: A json string version of the resource set
+
+
+
+   .. py:method:: from_json(resource_set_json: str) -> ResourceSetSlurm
+
+      Deserialize the slurm resource set.
+
+      :param resource_set_json: A json string version of the resource set
+
+      :returns: The deserialized resource set
+
+
+
+   .. py:method:: release() -> None
+
+      Release the slurm resource.
+
+
+

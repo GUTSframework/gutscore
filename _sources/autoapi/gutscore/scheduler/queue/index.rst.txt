@@ -1,0 +1,250 @@
+queue
+=====
+
+.. py:module:: gutscore.scheduler.queue
+
+.. autoapi-nested-parse::
+
+   A queue class for the gutscore scheduler.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.queue.Queue
+
+
+Module Contents
+---------------
+
+.. py:class:: Queue(db_name: str = 'guts_queue.db')
+
+   A disk-based SQL queue for the gutscore scheduler.
+
+   The schduler queue is a lightweight class interfacing with a
+   disk-based SQL queue. It provides the scheduler
+   components (workers, workergroup, resource manager, tasks, ...)
+   an atomic process to interact with the flow of GUTS algorithms.
+
+   :ivar _db_name: The queue file name
+
+
+
+   .. py:method:: file_name() -> str
+
+      Return the queue file name.
+
+      :returns: The queue file name
+
+
+
+   .. py:method:: add_task(task: scheduler.task.Task, deps: uuid.UUID | None = None) -> uuid.UUID
+
+      Add a new task to the queue.
+
+      :param task: The task to add to the queue
+      :param deps: The UUID of the task that this task depends on
+
+      :returns: The UUID of the added task
+
+
+
+   .. py:method:: fetch_task() -> tuple[int, uuid.UUID, scheduler.task.Task] | None
+
+      Fetch the next pending task and mark it as 'in_progress'.
+
+      A BEGIN EXCLUSIVE is nessesary to avoid race conditions from
+      other worker between the select and update.
+
+      :returns: A tuple of (task_id, task_uuid, task) or None
+
+
+
+   .. py:method:: mark_task_done(task_uuid: uuid.UUID) -> None
+
+      Mark the task as done.
+
+      :param task_uuid: The UUID of the task
+
+
+
+   .. py:method:: increment_completed_tasks() -> int
+
+      Atomically increment the completed tasks counter and fetch its new value.
+
+      :returns: The new value of the completed tasks counter
+
+
+
+   .. py:method:: get_completed_tasks() -> int
+
+      Retrieve the current value of the completed tasks counter.
+
+      :returns: The current value of the completed tasks counter
+
+
+
+   .. py:method:: get_running_tasks_count() -> int
+
+      Return the number of tasks marked in-progress.
+
+      :returns: The number of tasks marked in-progress
+
+
+
+   .. py:method:: get_remaining_tasks_count() -> int
+
+      Return the number of tasks marked pending/in-progress.
+
+      :returns: The number of tasks marked pending/in-progress
+
+
+
+   .. py:method:: get_tasks_count() -> int
+
+      Return the total number of tasks in the queue.
+
+      :returns: The total number of tasks
+
+
+
+   .. py:method:: add_event(event: scheduler.event.Event) -> None
+
+      Add a new event to the queue.
+
+      :param event: The event to add
+
+
+
+   .. py:method:: fetch_event() -> tuple[int, int, scheduler.event.Event] | None
+
+      Fetch the next pending event.
+
+      :returns: A tuple of (event_id, acc_count, event)
+
+
+
+   .. py:method:: get_events_count() -> int
+
+      Return the total number of events in the queue.
+
+      :returns: The total number of events
+
+
+
+   .. py:method:: register_worker(wid: tuple[int, int]) -> None
+
+      Register a worker in the queue.
+
+      :param wid: The worker id, defined by group and worker
+
+
+
+   .. py:method:: unregister_worker(wid: tuple[int, int]) -> None
+
+      Unregister a worker from the queue.
+
+      :param wid: The worker id, defined by group and worker
+
+
+
+   .. py:method:: update_worker_status(wid: tuple[int, int], status: str) -> None
+
+      Update the worker status in queue.
+
+      :param wid: The worker id, defined by group and worker
+      :param status: The worker status
+
+
+
+   .. py:method:: get_workers_count() -> int
+
+      Return the number of workers.
+
+      :returns: The number of workers
+
+
+
+   .. py:method:: get_active_workers_count() -> int
+
+      Return the number of active workers.
+
+      :returns: The number of active workers
+
+
+
+   .. py:method:: register_worker_group(gid: int, status: str | None = None) -> None
+
+      Register a worker group in the queue.
+
+      :param gid: The worker group id
+      :param status: The worker group status
+
+
+
+   .. py:method:: unregister_worker_group(gid: int) -> None
+
+      Unregister a worker group from the queue.
+
+      :param gid: The worker group id
+
+
+
+   .. py:method:: check_worker_group(gid: int) -> str
+
+      Return the status of a given worker group.
+
+      :param gid: The worker group id
+
+      :returns: The worker group status
+
+
+
+   .. py:method:: update_worker_group_status(gid: int, status: str) -> None
+
+      Update the worker group status in queue.
+
+      :param gid: The worker group id
+      :param status: The worker group status
+
+
+
+   .. py:method:: update_worker_group_resources(gid: int, resource: str) -> None
+
+      Update the worker group resources set in queue.
+
+      :param gid: The worker group id
+      :param resource: The resource set as a json string
+
+
+
+   .. py:method:: get_worker_group_resource(gid: int) -> str | None
+
+      Query the queue to get a given workergroup resource.
+
+      :param gid: The worker group id
+
+      :returns: The resource set
+
+
+
+   .. py:method:: get_worker_groups_count() -> int
+
+      Return the number of worker groups.
+
+      :returns: The number of worker groups
+
+
+
+   .. py:method:: delete(timeout: int = 60) -> None
+
+      Delete the DB when all tasks and workers are done.
+
+      :param wait_for_done: Wait until all tasks and workers are done
+      :param timeout: Timeout in seconds
+
+
+

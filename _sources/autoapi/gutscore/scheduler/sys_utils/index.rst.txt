@@ -1,0 +1,51 @@
+sys_utils
+=========
+
+.. py:module:: gutscore.scheduler.sys_utils
+
+.. autoapi-nested-parse::
+
+   A set of utilities to get platform information.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   gutscore.scheduler.sys_utils.is_mac_os
+   gutscore.scheduler.sys_utils.is_windows_os
+   gutscore.scheduler.sys_utils.is_linux_os
+   gutscore.scheduler.sys_utils.get_cpu_count
+   gutscore.scheduler.sys_utils.get_username
+
+
+Module Contents
+---------------
+
+.. py:function:: is_mac_os() -> bool
+
+   Indicates MacOS platform.
+
+
+.. py:function:: is_windows_os() -> bool
+
+   Indicates Windows platform.
+
+
+.. py:function:: is_linux_os() -> bool
+
+   Indicates Linux platform.
+
+
+.. py:function:: get_cpu_count() -> int
+
+   Get the number of CPU on the system.
+
+
+.. py:function:: get_username() -> str
+
+   Get the hostname.
+
+

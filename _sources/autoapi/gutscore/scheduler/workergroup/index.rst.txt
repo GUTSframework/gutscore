@@ -1,0 +1,92 @@
+workergroup
+===========
+
+.. py:module:: gutscore.scheduler.workergroup
+
+.. autoapi-nested-parse::
+
+   A worker group class for the gutscore scheduler.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   gutscore.scheduler.workergroup.WorkerGroup
+
+
+Module Contents
+---------------
+
+.. py:class:: WorkerGroup(wgroup_id: int, config: dict[Any, Any], resource_config: dict[Any, Any], queue: scheduler.queue.Queue | None = None)
+
+   A workergroup class gathering some workers with a given set of resources.
+
+   This is a volatile class, providing granularity in
+   the allocation of the compute resources to workers
+   within the gutscore scheduler.
+
+   :ivar _config: A dictionary of configuration parameters
+   :ivar _wgroup_id: The group id number
+   :ivar _resource_config: A dictionary describing the compute resources associated to the group
+   :ivar _resources_set: A resource set object gathering resources functionalities
+   :ivar _queue: The scheduler queue this group interacts with
+
+
+
+   .. py:method:: id() -> int
+
+      Get the id of the worker group.
+
+      :returns: The id of the worker group
+
+
+
+   .. py:method:: get_queue() -> scheduler.queue.Queue | None
+
+      Get the queue of the worker group.
+
+      :returns: The queue of the worker group
+
+
+
+   .. py:method:: attach_queue(queue: scheduler.queue.Queue) -> None
+
+      Attach a queue to the worker group.
+
+      :param queue: A Queue with which the wgroup will interact
+
+      :raises RuntimeError: If the workergroup already has a queue attached
+
+
+
+   .. py:method:: request_resources(manager: scheduler.resource_manager.ResourceManager) -> None
+
+      Request resources for the worker group.
+
+      This function request resources from the manager, effectively
+      relinquishing the control of the program to a subprocess in
+      order to harmonize workflow accross various resource backend.
+
+      :param manager: A ResourceManager from which to get the resources
+
+      :raises RuntimeError: If the worker group is not associated with a queue
+
+
+
+   .. py:method:: launch(manager: scheduler.resource_manager.ResourceManager) -> None
+
+      Launch the workers in the group.
+
+      This is the entry-point of the workergroup after a request_resources call.
+      Resources are looked up from the queue, checked in the current
+      environment and worker are fired up.
+
+      :param manager: A ResourceManager to handle resource set and checks
+
+      :raises RuntimeError: If the worker group is not associated with a queue
+
+
+

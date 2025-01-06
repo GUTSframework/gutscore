@@ -1,0 +1,29 @@
+scheduler
+=========
+
+.. py:module:: gutscore.scheduler
+
+.. autoapi-nested-parse::
+
+   The scheduler module for gutscore.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/gutscore/scheduler/event/index
+   /autoapi/gutscore/scheduler/queue/index
+   /autoapi/gutscore/scheduler/resource_manager/index
+   /autoapi/gutscore/scheduler/resource_set/index
+   /autoapi/gutscore/scheduler/scheduler/index
+   /autoapi/gutscore/scheduler/slurm_utils/index
+   /autoapi/gutscore/scheduler/sys_utils/index
+   /autoapi/gutscore/scheduler/task/index
+   /autoapi/gutscore/scheduler/worker/index
+   /autoapi/gutscore/scheduler/workergroup/index
+
+
