@@ -25,6 +25,7 @@ classifiers = [
 dependencies = [
   "psutil",
   "toml",
+  "numpy",
 ]
 description = "The gutscore package contains the core classes and functionalities upon which path sampling algorithms can be build."
 keywords = ["Path Sampling"," Rare Events"," Molecular Dynamics"]
