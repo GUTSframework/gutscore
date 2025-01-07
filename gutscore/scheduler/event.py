@@ -61,7 +61,7 @@ def stop_worker(wid : tuple[int,int],
         queue : the Queue from which the event was caught
     """
     queue.unregister_worker(wid)
-    info_msg = f"Worker {wid} stopped."
+    info_msg = f"Worker {wid} stopped by event."
     _logger.info(info_msg)
     sys.exit(0)
 

@@ -8,7 +8,7 @@ from scheduler.queue import Queue
 _logger = logging.getLogger(__name__)
 
 # Base worker function that will run in a separate process
-def worker_function(queue : Queue,
+def worker_function(queue : Queue | None,
                     wgroup_id : int,
                     worker_id : int,
                     max_tasks : int,
@@ -37,7 +37,7 @@ def worker_function(queue : Queue,
     while True:
         # Check for function runtime termination
         if time.time() - time_start > runtime:
-            warn_msg = f"Worker {worker_id} is stopping due to runtime exceeded {runtime} seconds."
+            warn_msg = f"Worker {wid} is stopping due to runtime exceeded {runtime} seconds."
             _logger.warning(warn_msg)
             if queue:
                 queue.unregister_worker(wid)
@@ -47,7 +47,7 @@ def worker_function(queue : Queue,
         if queue:
             # Check the completed task count
             if queue.get_completed_tasks() >= max_tasks:
-                warn_msg = f"Worker {worker_id} is stopping as {max_tasks} tasks have been completed."
+                warn_msg = f"Worker {wid} is stopping as {max_tasks} tasks have been completed."
                 _logger.warning(warn_msg)
                 queue.unregister_worker(wid)
                 break
@@ -63,7 +63,7 @@ def worker_function(queue : Queue,
             if task_data:
                 task_id, task_uuid, task = task_data
                 queue.update_worker_status(wid, f"in_progress-{task_id}")
-                info_msg = f"Worker {worker_id} picked up task {task_id}"
+                info_msg = f"Worker {wid} picked up task {task_id}"
                 _logger.info(info_msg)
 
                 # Execute the task using the registered functions
