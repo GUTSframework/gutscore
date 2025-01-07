@@ -1,8 +1,8 @@
 """Tests for the gutscore.worker functions."""
 
 import pytest
-from scheduler.queue import Queue
 from scheduler.event import Event
+from scheduler.queue import Queue
 from scheduler.task import Task
 from scheduler.worker import worker_function
 

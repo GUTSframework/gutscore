@@ -1,9 +1,13 @@
 """A set of functions making up the workers."""
+from __future__ import annotations
 import logging
 import time
-from scheduler.event import Event
+from typing import TYPE_CHECKING
 from scheduler.event import event_actions_dict
-from scheduler.queue import Queue
+
+if TYPE_CHECKING:
+    from scheduler.event import Event
+    from scheduler.queue import Queue
 
 _logger = logging.getLogger(__name__)
 
